@@ -3,12 +3,17 @@
 #include <avr/sleep.h>
 #include <util/delay.h>
 
-enum {
-    DELAY_MS_DEBOUCE = 50,
-    DELAY_MS_MOVE = 300,
+/*
+ * Sound effect functions from Sparkfun's Simon Says
+ * https://github.com/sparkfun/Simon-Says
+ */
 
-    LED_MIN = 0,
-    LED_MAX = 11,
+enum {
+    DELAY_MS_DEBOUNCE =  50,
+    DELAY_MS_MOVE     = 260,
+
+    LED_MIN  = 0,
+    LED_MAX  = 11,
     NUM_LEDS = 12,
 
     PLAYER_0 = 0,
@@ -115,35 +120,25 @@ static void toner(uint8_t which, uint16_t buzz_length_ms)
     case 0:
 	buzz_sound(buzz_length_ms, 1136); 
 	break;
-    
     case 1:
 	buzz_sound(buzz_length_ms, 568); 
 	break;
-
     case 2:
 	buzz_sound(buzz_length_ms, 851); 
 	break;
-
     case 3:
 	buzz_sound(buzz_length_ms, 638); 
 	break;
     }
 }
 
-/* void beep(void) */
-/* { */
-/*     TCCR0A |= _BV(COM0B1); */
-/*     _delay_ms(50); */
-/*     TCCR0A &= ~_BV(COM0B1); */
-/* } */
-
 ISR(INT0_vect)
 {
     if (bit_is_clear(PIND, PD2)) {
-	_delay_ms(DELAY_MS_DEBOUCE);
+	_delay_ms(DELAY_MS_DEBOUNCE);
 	if (bit_is_clear(PIND, PD2)) {
 	    ++button0_pressed;
-	    toner(2, 5);
+	    toner(2, 50);
 	}
     }
 }
@@ -151,10 +146,10 @@ ISR(INT0_vect)
 ISR(INT1_vect)
 {
     if (bit_is_clear(PIND, PD3)) {
-    	_delay_ms(DELAY_MS_DEBOUCE);
+    	_delay_ms(DELAY_MS_DEBOUNCE);
     	if (bit_is_clear(PIND, PD3)) {
 	    ++button1_pressed;
-	    toner(3, 5);
+	    toner(1, 50);
     	}
     }
 }
@@ -226,12 +221,9 @@ void setup(void)
     MCUCR &= ~_BV(ISC00);
 
     GIMSK |= (_BV(INT1) | _BV(INT0)); /* enable INT1, INT0 */
-   
-    /* PWM */
-    TCCR0A |= (_BV(WGM01) | _BV(WGM00));
-    TCCR0B |= _BV(CS01);
-    TCNT0 = 0;
-    OCR0B = 50;
+
+    /* Sound */
+    DDRD |= _BV(BUZZER1);
       
     sei();
 }
@@ -304,9 +296,9 @@ int main(void)
 
     setup();
 
-    DDRD |= _BV(BUZZER1);
-    DDRD |= _BV(BUZZER2);
-
+    winner_sound();
+    winner_sound();
+    winner_sound();
     winner_sound();
 
     for (;;) {
