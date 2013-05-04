@@ -223,7 +223,9 @@ void setup(void)
     GIMSK |= (_BV(INT1) | _BV(INT0)); /* enable INT1, INT0 */
 
     /* Sound */
-    DDRD |= _BV(BUZZER1);
+    if (bit_is_set(PIND, PD2)) {
+	DDRD |= _BV(BUZZER1);
+    }
       
     sei();
 }
