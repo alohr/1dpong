@@ -1,0 +1,11 @@
+# Eagle
+*.b#?
+*.s#?
+
+# avr-gcc
+*.o
+*.elf
+*.hex
+
+# Mac crap
+.DS_Store
