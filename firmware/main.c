@@ -9,7 +9,7 @@
  */
 
 enum {
-    DELAY_MS_DEBOUNCE =  50,
+    DELAY_MS_DEBOUNCE =  10,
     DELAY_MS_MOVE     = 260,
 
     LED_MIN  = 0,
@@ -207,8 +207,8 @@ void setup(void)
 {
     DDRB = 0;
     PORTB = 0;
-
-    DDRD = _BV(PD5); /* PD5 output (piezo) */
+    
+    DDRD = 0;
     PORTD |= _BV(PD2); /* enable pull-up on PD2 - INT0 */
     PORTD |= _BV(PD3); /* enable pull-up on PD3 - INT1 */
 
@@ -223,10 +223,11 @@ void setup(void)
     GIMSK |= (_BV(INT1) | _BV(INT0)); /* enable INT1, INT0 */
 
     /* Sound */
+    _delay_ms(DELAY_MS_DEBOUNCE);
     if (bit_is_set(PIND, PD2)) {
-	DDRD |= _BV(BUZZER1);
+	DDRD |= (_BV(PD4) |_BV(PD5)); /* PD4, PD5 output (piezo) */
     }
-      
+
     sei();
 }
 
@@ -298,7 +299,6 @@ int main(void)
 
     setup();
 
-    winner_sound();
     winner_sound();
     winner_sound();
     winner_sound();
